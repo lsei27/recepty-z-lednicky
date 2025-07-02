@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepty z ledničky</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .camera-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px dashed #dee2e6;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .camera-section:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .camera-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .camera-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .preview-section {
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .ingredients-section {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .ingredients-title {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ingredient-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .recipes-section {
+            display: none;
+        }
+
+        .recipe-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .recipe-title {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+        }
+
+        .recipe-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .recipe-ingredients {
+            margin-bottom: 15px;
+        }
+
+        .recipe-ingredients h4 {
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .recipe-instructions {
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .recipe-instructions h4 {
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .recipe-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            #imageGrid {
+                grid-template-columns: 1fr;
+            }
+            
+            .camera-section > div:first-of-type {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍳 Recepty z ledničky</h1>
+            <p>Vyfotografujte obsah ledničky a objevte zdravé recepty připravitelné do 20 minut</p>
+        </div>
+
+        <div class="error" id="errorMessage"></div>
+
+        <div class="camera-section">
+            <div class="camera-icon">📸</div>
+            <p style="margin-bottom: 15px;">Vyfotografujte obsah vaší ledničky</p>
+            <p style="margin-bottom: 15px; font-size: 0.9em; color: #7f8c8d;">💡 Tip: Nahrajte 2 fotografie pro lepší rozpoznání - jedna z hlavní části ledničky, druhá ze dvířek</p>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                <div style="text-align: center;">
+                    <input type="file" id="imageInput1" class="file-input" accept="image/*" capture="environment">
+                    <button class="camera-btn" onclick="document.getElementById('imageInput1').click()">
+                        📷 Foto 1: Hlavní část
+                    </button>
+                </div>
+                <div style="text-align: center;">
+                    <input type="file" id="imageInput2" class="file-input" accept="image/*" capture="environment">
+                    <button class="camera-btn" onclick="document.getElementById('imageInput2').click()">
+                        🚪 Foto 2: Dvířka
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;" id="imageGrid">
+                <div id="preview1" style="text-align: center; display: none;">
+                    <p style="margin-bottom: 10px; font-weight: bold; color: #2c3e50;">Foto 1: Hlavní část</p>
+                    <img id="imagePreview1" class="image-preview" alt="Náhled fotografie 1" style="max-height: 200px;">
+                </div>
+                <div id="preview2" style="text-align: center; display: none;">
+                    <p style="margin-bottom: 10px; font-weight: bold; color: #2c3e50;">Foto 2: Dvířka</p>
+                    <img id="imagePreview2" class="image-preview" alt="Náhled fotografie 2" style="max-height: 200px;">
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px;" id="analyzeButtonContainer" style="display: none;">
+                <button class="camera-btn" onclick="analyzeAllImages()" id="analyzeButton">
+                    🔍 Analyzovat fotografie
+                </button>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingSection" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Analyzuji ingredience a hledám recepty...</p>
+        </div>
+
+        <div class="ingredients-section" id="ingredientsSection">
+            <h3 class="ingredients-title">🥬 Nalezené ingredience z ledničky:</h3>
+            <div class="ingredients-list" id="ingredientsList"></div>
+        </div>
+
+        <div class="recipes-section" id="recipesSection">
+            <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">👩‍🍳 Doporučené recepty</h2>
+            <div id="recipesList"></div>
+        </div>
+    </div>
+
+    <script>
+        let detectedIngredients = [];
+        let uploadedImages = {
+            image1: null,
+            image2: null
+        };
+        
+        // Simulace AI rozpoznávání ingrediencí z obrázku
+        function analyzeImage(imageFile) {
+            return new Promise((resolve) => {
+                // Simulace detekce ingrediencí (v reálné aplikaci by zde byla integrace s AI API)
+                setTimeout(() => {
+                    const possibleIngredients = [
+                        'rajčata', 'okurky', 'salát', 'mrkev', 'cibule', 'česnek',
+                        'paprika', 'brokolice', 'květák', 'cuketa', 'liček',
+                        'kuřecí maso', 'hovězí maso', 'ryba', 'vejce', 'sýr',
+                        'jogurt', 'mléko', 'máslo', 'olivový olej', 'brambory',
+                        'rýže', 'těstoviny', 'fazole', 'čočka', 'avokádo',
+                        'špenát', 'houby', 'citron', 'bylinkový sýr', 'cottage cheese',
+                        'mozzarella', 'parmazán', 'cherry rajčátka', 'rukola', 'bazalka'
+                    ];
+                    
+                    // Základní koření, které je vždy k dispozici
+                    const availableSpices = [
+                        'sůl', 'černý pepř', 'sladká paprika', 'oregano', 
+                        'grilovací koření', 'chilli', 'majoránka', 'kmín', 
+                        'bazalka sušená', 'rozmarýn', 'tymián', 'česnek granulovaný'
+                    ];
+                    
+                    // Základní ingredience ze spíže a mrazáku (vždy k dispozici)
+                    const pantryIngredients = [
+                        'těstoviny', 'rýže', 'olej', 'ocet', 'brambory', 'šalotka', 
+                        'houby', 'kuskus', 'bazalkové pesto', 'rajčatové pesto', 
+                        'solamyl', 'sojová omáčka', 'mouka', 'cukr', 'med',
+                        'mražená zelenina', 'mražené krevety'
+                    ];
+                    
+                    // Náhodný výběr ingrediencí pro simulaci
+                    const selectedIngredients = [];
+                    const numberOfIngredients = Math.floor(Math.random() * 8) + 5;
+                    
+                    for (let i = 0; i < numberOfIngredients; i++) {
+                        const randomIngredient = possibleIngredients[Math.floor(Math.random() * possibleIngredients.length)];
+                        if (!selectedIngredients.includes(randomIngredient)) {
+                            selectedIngredients.push(randomIngredient);
+                        }
+                    }
+                    
+                    // Přidáme vždy dostupné koření (vybere se náhodně 3-5 druhů)
+                    const numberOfSpices = Math.floor(Math.random() * 3) + 3;
+                    for (let i = 0; i < numberOfSpices; i++) {
+                        const randomSpice = availableSpices[Math.floor(Math.random() * availableSpices.length)];
+                        if (!selectedIngredients.includes(randomSpice)) {
+                            selectedIngredients.push(randomSpice);
+                        }
+                    }
+                    
+                    // Přidáme základní ingredience ze spíže a mrazáku (vybere se náhodně 4-6 druhů)
+                    const numberOfPantry = Math.floor(Math.random() * 3) + 4;
+                    for (let i = 0; i < numberOfPantry; i++) {
+                        const randomPantry = pantryIngredients[Math.floor(Math.random() * pantryIngredients.length)];
+                        if (!selectedIngredients.includes(randomPantry)) {
+                            selectedIngredients.push(randomPantry);
+                        }
+                    }
+                    
+                    resolve(selectedIngredients);
+                }, 2000);
+            });
+        }
+
+        // Funkce pro analýzu více obrázků najednou
+        async function analyzeMultipleImages(images) {
+            const allIngredients = new Set();
+            
+            for (const image of images) {
+                if (image) {
+                    const ingredients = await analyzeImage(image);
+                    ingredients.forEach(ingredient => allIngredients.add(ingredient));
+                }
+            }
+            
+            // Přidáme extra ingredience pro simulaci, že druhá fotka zachytila více věcí
+            const additionalIngredients = [
+                'hořčice', 'kečup', 'majonéza', 'tvaroh', 'šunka', 'salám', 
+                'džem', 'marmeláda', 'pickles', 'olivy', 'kapary', 'minerálka'
+            ];
+            
+            if (images.length > 1) {
+                const extraCount = Math.floor(Math.random() * 4) + 2;
+                for (let i = 0; i < extraCount; i++) {
+                    const randomExtra = additionalIngredients[Math.floor(Math.random() * additionalIngredients.length)];
+                    allIngredients.add(randomExtra);
+                }
+            }
+            
+            return Array.from(allIngredients);
+        }
+
+        // Generování receptů na základě ingrediencí
+        function generateRecipes(ingredients) {
+            const recipes = [
+                {
+                    title: "Těstoviny s bazalkovým pestem a krevetami",
+                    time: "12 min",
+                    method: "Vaření + grilování",
+                    appliances: "sporák, kontaktní gril",
+                    ingredients: ["těstoviny", "bazalkové pesto", "mražené krevety", "parmazán", "olivový olej", "česnek", "sůl", "černý pepř"],
+                    instructions: "Uvařte těstoviny podle návodu. Mezitím rozmrazte krevety a grilujte je s česnekem 3 minuty. Smíchejte s těstovinami, pestem a parmazánem."
+                },
+                {
+                    title: "Rychlá rýže s mraženou zeleninou a sojovou omáčkou",
+                    time: "15 min",
+                    method: "Vaření + pečení",
+                    appliances: "sporák, horkovzdušná fritéza",
+                    ingredients: ["rýže", "mražená zelenina", "sojová omáčka", "česnek", "šalotka", "olej", "sůl", "chilli"],
+                    instructions: "Uvařte rýži. Zeleninu a nakrájenou šalotku pečte ve fritéze 8 minut. Smíchejte s rýží, sojovou omáčkou a kořením."
+                },
+                {
+                    title: "Grilované brambory s bylinkami",
+                    time: "18 min",
+                    method: "Grilování",
+                    appliances: "kontaktní grill",
+                    ingredients: ["brambory", "rozmarýn", "tymián", "olivový olej", "česnek granulovaný", "sůl", "grilovací koření"],
+                    instructions: "Brambory nakrájejte na plátky, potřete olejem a kořením. Grilujte po vrstvách 15-18 minut do zlatova."
+                },
+                {
+                    title: "Kuskus s pečenou zeleninou a pestem",
+                    time: "10 min",
+                    method: "Zalévání + pečení",
+                    appliances: "horkovzdušná fritéza",
+                    ingredients: ["kuskus", "rajčatové pesto", "paprika", "cuketa", "olivový olej", "oregano", "sůl"],
+                    instructions: "Zalijte kuskus vroucí vodou, nechte 5 minut. Zeleninu pečte ve fritéze s olejem a oreganem 8 minut. Smíchejte s kuskusem a pestem."
+                },
+                {
+                    title: "Bylinkové houby s vejci na toastu",
+                    time: "8 min",
+                    method: "Grilování + opékání",
+                    appliances: "kontaktní gril, toastovač",
+                    ingredients: ["houby", "vejce", "chléb", "máslo", "tymián", "majoránka", "sůl", "černý pepř"],
+                    instructions: "Opečte chléb v toastovači. Houby grilujte s bylinkami 4 minuty, přidejte vejce a dokončete. Podávejte na toastu."
+                },
+                {
+                    title: "Rychlé krevety v medovo-sojové glazuře",
+                    time: "10 min",
+                    method: "Grilování",
+                    appliances: "kontaktní gril",
+                    ingredients: ["mražené krevety", "med", "sojová omáčka", "česnek", "chilli", "olej", "citron"],
+                    instructions: "Smíchejte med, sojovou omáčku a koření. Rozmrazené krevety marinujte 2 minuty, pak grilujte 6 minut. Podávejte s citronem."
+                },
+                {
+                    title: "Zapékané brambory se sýrem a bylinkami",
+                    time: "20 min",
+                    method: "Pečení",
+                    appliances: "trouba",
+                    ingredients: ["brambory", "sýr", "mléko", "máslo", "rozmarýn", "česnek granulovaný", "sůl", "černý pepř"],
+                    instructions: "Nakrájené brambory zapékejte s mlékem, máslem a kořením v troubě na 200°C 15 minut. Posypte sýrem a dopečte 5 minut."
+                },
+                {
+                    title: "Asijská polévka s krevetami a kuskusem",
+                    time: "12 min",
+                    method: "Vaření",
+                    appliances: "sporák",
+                    ingredients: ["mražené krevety", "kuskus", "šalotka", "sojová omáčka", "chilli", "česnek", "olej"],
+                    instructions: "Na oleji osmahneme šalotku a česnek. Přidáme krevety, zalijeme vodou, dochutíme sojovkou a chilli. Vaříme 5 minut, přidáme kuskus na 3 minuty."
+                },
+                {
+                    title: "Sladký med-citronový losos s rýží",
+                    time: "18 min",
+                    method: "Pečení + vaření",
+                    appliances: "trouba, sporák",
+                    ingredients: ["ryba", "med", "citron", "rýže", "olivový olej", "tymián", "sůl", "černý pepř"],
+                    instructions: "Rybu potřete medem, citronem a bylinkami, pečte 15 minut na 200°C. Mezitím uvařte rýži. Podávejte společně."
+                },
+                {
+                    title: "Rychlé těstoviny s rajčatovým pestem a mozzarellou",
+                    time: "11 min",
+                    method: "Vaření + zapékání",
+                    appliances: "sporák, mikrovlnka",
+                    ingredients: ["těstoviny", "rajčatové pesto", "mozzarella", "bazalka sušená", "olivový olej", "sůl"],
+                    instructions: "Uvařte těstoviny. Smíchejte s pestem a bazalkou, přidejte mozzarellu a krátce zahřejte v mikrovlnce 1 minutu."
+                },
+                {
+                    title: "Pikantní bramborové placky",
+                    time: "15 min",
+                    method: "Grilování",
+                    appliances: "kontaktní gril",
+                    ingredients: ["brambory", "vejce", "mouka", "šalotka", "chilli", "sůl", "černý pepř", "olej"],
+                    instructions: "Nastrouhanej brambory smíchejte s vejcem, moukou, nakrájenou šalotkou a kořením. Grilujte placky 12 minut do zlatova."
+                }
+            ];
+
+            // Filtrujeme recepty podle dostupných ingrediencí
+            return recipes.filter(recipe => {
+                return recipe.ingredients.some(ingredient => 
+                    ingredients.some(detected => detected.toLowerCase().includes(ingredient.toLowerCase()))
+                );
+            }).slice(0, 4); // Zobrazíme maximálně 4 recepty
+        }
+
+        // Zobrazení ingrediencí
+        function displayIngredients(ingredients) {
+            const ingredientsList = document.getElementById('ingredientsList');
+            ingredientsList.innerHTML = '';
+            
+            ingredients.forEach(ingredient => {
+                const tag = document.createElement('span');
+                tag.className = 'ingredient-tag';
+                tag.textContent = ingredient;
+                ingredientsList.appendChild(tag);
+            });
+            
+            document.getElementById('ingredientsSection').style.display = 'block';
+        }
+
+        // Zobrazení receptů
+        function displayRecipes(recipes) {
+            const recipesList = document.getElementById('recipesList');
+            recipesList.innerHTML = '';
+            
+            if (recipes.length === 0) {
+                recipesList.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Bohužel jsem nenašel vhodné recepty pro vaše ingredience. Zkuste přidat více ingrediencí.</p>';
+            } else {
+                recipes.forEach(recipe => {
+                    const recipeCard = document.createElement('div');
+                    recipeCard.className = 'recipe-card';
+                    recipeCard.innerHTML = `
+                        <h3 class="recipe-title">${recipe.title}</h3>
+                        <div class="recipe-meta">
+                            <span>⏱️ ${recipe.time}</span>
+                            <span>🍳 ${recipe.method}</span>
+                            <span>📱 ${recipe.appliances}</span>
+                        </div>
+                        <div class="recipe-ingredients">
+                            <h4>Ingredience:</h4>
+                            <p>${recipe.ingredients.join(', ')}</p>
+                        </div>
+                        <div class="recipe-instructions">
+                            <h4>Postup:</h4>
+                            <p>${recipe.instructions}</p>
+                        </div>
+                    `;
+                    recipesList.appendChild(recipeCard);
+                });
+            }
+            
+            document.getElementById('recipesSection').style.display = 'block';
+        }
+
+        // Zobrazení chyby
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Hlavní funkce pro zpracování obrázků
+        async function analyzeAllImages() {
+            try {
+                const imagesToAnalyze = [];
+                if (uploadedImages.image1) imagesToAnalyze.push(uploadedImages.image1);
+                if (uploadedImages.image2) imagesToAnalyze.push(uploadedImages.image2);
+                
+                if (imagesToAnalyze.length === 0) {
+                    showError('Nahrajte alespoň jednu fotografii před analýzou.');
+                    return;
+                }
+
+                // Zobrazení loading stavu
+                document.getElementById('loadingSection').style.display = 'block';
+                document.getElementById('loadingSection').querySelector('p').textContent = 
+                    `Analyzuji ${imagesToAnalyze.length} ${imagesToAnalyze.length === 1 ? 'fotografii' : 'fotografie'} a hledám recepty...`;
+                document.getElementById('ingredientsSection').style.display = 'none';
+                document.getElementById('recipesSection').style.display = 'none';
+
+                // Analýza obrázků
+                detectedIngredients = await analyzeMultipleImages(imagesToAnalyze);
+                
+                // Skrytí loading stavu
+                document.getElementById('loadingSection').style.display = 'none';
+                
+                // Zobrazení ingrediencí
+                displayIngredients(detectedIngredients);
+                
+                // Generování a zobrazení receptů
+                const recipes = generateRecipes(detectedIngredients);
+                displayRecipes(recipes);
+                
+            } catch (error) {
+                document.getElementById('loadingSection').style.display = 'none';
+                showError('Došlo k chybě při zpracování obrázků. Zkuste to prosím znovu.');
+                console.error('Error processing images:', error);
+            }
+        }
+
+        // Funkce pro zobrazení/skrytí tlačítka analýzy
+        function updateAnalyzeButton() {
+            const hasAnyImage = uploadedImages.image1 || uploadedImages.image2;
+            const container = document.getElementById('analyzeButtonContainer');
+            
+            if (hasAnyImage) {
+                container.style.display = 'block';
+                document.getElementById('previewSection').style.display = 'block';
+                
+                const imageCount = (uploadedImages.image1 ? 1 : 0) + (uploadedImages.image2 ? 1 : 0);
+                const buttonText = imageCount === 1 ? 
+                    '🔍 Analyzovat fotografii' : 
+                    '🔍 Analyzovat obě fotografie';
+                document.getElementById('analyzeButton').textContent = buttonText;
+            } else {
+                container.style.display = 'none';
+                document.getElementById('previewSection').style.display = 'none';
+            }
+        }
+
+        // Event listenery pro upload obrázků
+        document.getElementById('imageInput1').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadedImages.image1 = file;
+                
+                // Zobrazení náhledu obrázku
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview1');
+                    preview.src = e.target.result;
+                    document.getElementById('preview1').style.display = 'block';
+                    updateAnalyzeButton();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('imageInput2').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadedImages.image2 = file;
+                
+                // Zobrazení náhledu obrázku
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview2');
+                    preview.src = e.target.result;
+                    document.getElementById('preview2').style.display = 'block';
+                    updateAnalyzeButton();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

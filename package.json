@@ -1,0 +1,52 @@
+{
+  "name": "recepty-z-lednicky",
+  "version": "1.0.0",
+  "description": "Webová aplikace pro vytváření zdravých receptů na základě fotografií obsahu ledničky",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server --port=8000",
+    "test": "echo \"Spuštění testů - implementovat v budoucnu\" && exit 0",
+    "build": "echo \"Build process - pro budoucí rozšíření\" && exit 0",
+    "lint": "echo \"Linting - implementovat v budoucnu\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/[username]/recepty-z-lednicky.git"
+  },
+  "keywords": [
+    "recepty",
+    "lednicka",
+    "ai",
+    "fotografie",
+    "kuchareni",
+    "zdravi",
+    "javascript",
+    "webova-aplikace",
+    "html5",
+    "css3"
+  ],
+  "author": {
+    "name": "[Vaše jméno]",
+    "email": "[vas@email.com]",
+    "url": "https://github.com/[username]"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/[username]/recepty-z-lednicky/issues"
+  },
+  "homepage": "https://github.com/[username]/recepty-z-lednicky#readme",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
