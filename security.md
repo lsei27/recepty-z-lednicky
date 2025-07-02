@@ -9,7 +9,7 @@ Bezpečnost našich uživatelů je pro nás prioritou. Pokud objevíte bezpečno
 **Prosíme, NEHLASTE bezpečnostní zranitelnosti přes veřejné GitHub Issues.**
 
 Místo toho:
-1. **Pošlete email** na: [security@your-domain.com] (nahraďte vaším emailem)
+1. **Pošlete email** na: lukas.seifert8@gmail.com
 2. **Nebo použijte GitHub Security Advisory** na privátní hlášení
 3. **Uveďte** co nejvíce detailů o zranitelnosti
 
